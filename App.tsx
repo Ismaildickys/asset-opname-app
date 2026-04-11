@@ -7,6 +7,7 @@ import * as FileSystem from "expo-file-system/legacy";
 export default function App() {
   const [barcode, setBarcode] = useState<string | null>(null);
   const [mode, setMode] = useState<"scan" | "camera">("scan");
+  const [photoCount, setPhotoCount] = useState(1);
 
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<any>(null);
@@ -26,6 +27,7 @@ export default function App() {
     setMode("camera");
   };
 
+
   // 📸 Take picture + save
   const takePicture = async () => {
     try {
@@ -40,7 +42,7 @@ export default function App() {
 
       const newPath =
         FileSystem.documentDirectory +
-        `${barcode}_${date}.jpg`;
+        `${barcode}_${date}_${photoCount}.jpg`;
 
       // 📁 Copy & rename file
       await FileSystem.copyAsync({
@@ -50,18 +52,23 @@ export default function App() {
 
       console.log("Saved as:", newPath);
 
-      // 📸 Simpan ke gallery
+      // Save to gallery
       await MediaLibrary.createAssetAsync(newPath);
 
       alert(`Foto tersimpan: ${barcode}_${date}.jpg`);
 
-      // reset
-      setBarcode(null);
-      setMode("scan");
+      // Increment fot the next photo
+      setPhotoCount((prev) => prev + 1);
     } catch (error) {
       console.error("ERROR:", error);
       alert("Gagal menyimpan foto");
     }
+  };
+
+  const handleFinish = () => {
+    setBarcode(null);
+    setPhotoCount(1);
+    setMode("scan");
   };
 
   return (
@@ -85,10 +92,11 @@ export default function App() {
           zoom={0.2}
         >
           <View style={styles.cameraContainer}>
-            <Text style={styles.text}>
-              Barcode: {barcode}
-            </Text>
+            <Text style={styles.text}>Barcode: {barcode}</Text>
+            <Text style={styles.text}>Foto ke: {photoCount}</Text>
+
             <Button title="Ambil Foto" onPress={takePicture} />
+            <Button title="Selesai" onPress={handleFinish} />
           </View>
         </CameraView>
       )}
