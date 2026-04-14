@@ -8,9 +8,10 @@ export default function App() {
   const [barcode, setBarcode] = useState<string | null>(null);
   const [mode, setMode] = useState<"scan" | "camera">("scan");
   const [photoCount, setPhotoCount] = useState(1);
-  const BASE_DIR = FileSystem.documentDirectory + "Aset/";
-
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
+
+  const BASE_DIR = FileSystem.documentDirectory + "Aset/";
   const cameraRef = useRef<any>(null);
 
   useEffect(() => {
@@ -98,9 +99,34 @@ export default function App() {
     setMode("scan");
   };
 
+  if (!permission?.granted) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>No camera access</Text>
+        <Button title="Grant Permission" onPress={requestPermission} />
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      {mode === "scan" ? (
+      {!isCameraOpen ? (
+        // 🏠 HOME SCREEN
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ fontSize: 18, marginBottom: 20 }}>
+            Asset Photo App
+          </Text>
+
+          <Button
+            title="Open Camera"
+            onPress={() => {
+              setIsCameraOpen(true);
+              setMode("scan");
+            }}
+          />
+        </View>
+      ) : mode === "scan" ? (
+        // 🔍 SCAN MODE
         <View style={{ flex: 1 }}>
           <CameraView
             style={{ flex: 1 }}
@@ -114,9 +140,18 @@ export default function App() {
           {/* Overlay */}
           <View style={styles.overlay}>
             <Text style={styles.text}>Scan Barcode</Text>
+
+            <Button
+              title="Back"
+              onPress={() => {
+                setIsCameraOpen(false);
+                setBarcode(null);
+              }}
+            />
           </View>
         </View>
       ) : (
+        // 📸 CAMERA MODE
         <View style={{ flex: 1 }}>
           <CameraView
             style={{ flex: 1 }}
@@ -131,7 +166,17 @@ export default function App() {
             <Text style={styles.text}>Foto ke: {photoCount}</Text>
 
             <Button title="Ambil Foto" onPress={takePicture} />
+
             <Button title="Selesai" onPress={handleFinish} />
+
+            <Button
+              title="Back"
+              onPress={() => {
+                setIsCameraOpen(false);
+                setBarcode(null);
+                setPhotoCount(1);
+              }}
+            />
           </View>
         </View>
       )}
