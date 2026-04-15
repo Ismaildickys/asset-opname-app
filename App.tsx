@@ -40,7 +40,7 @@ export default function App() {
   const sanitizeFileName = (input: string) => {
     return input
       .replace(/[^a-zA-Z0-9]/g, "_")
-      .substring(0, 50);
+      .substring(0, 100);
   };
 
   const extractName = (input: string) => {
@@ -59,8 +59,6 @@ export default function App() {
 
       const photo = await cameraRef.current.takePictureAsync();
 
-      const date = new Date().toISOString().split("T")[0];
-
       // 📁 Main folder
       await ensureDirExists(BASE_DIR);
 
@@ -74,7 +72,7 @@ export default function App() {
 
       // 📸 Final Path (AMAN)
       const newPath =
-        assetDir + `${safeBarcode}_${date}_${photoCount}.jpg`;
+        assetDir + `${safeBarcode}_${photoCount}.jpg`;
 
       await FileSystem.copyAsync({
         from: photo.uri,
