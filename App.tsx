@@ -22,7 +22,7 @@ export default function App() {
   if (!permission) return <Text>Loading...</Text>;
   if (!permission.granted) return <Text>No camera access</Text>;
 
-  // 🔍 Handle scan barcode
+  // Handle scan barcode
   const handleBarCodeScanned = ({ data }: { data: string }) => {
     console.log("Barcode:", data);
     setBarcode(data);
