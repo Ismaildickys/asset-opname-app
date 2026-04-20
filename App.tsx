@@ -3,6 +3,7 @@ import { Text, View, Button, StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system/legacy";
+import { TouchableOpacity } from "react-native";
 
 export default function App() {
   const [barcode, setBarcode] = useState<string | null>(null);
@@ -110,18 +111,28 @@ export default function App() {
     <View style={{ flex: 1 }}>
       {!isCameraOpen ? (
         // 🏠 HOME SCREEN
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontSize: 18, marginBottom: 20 }}>
-            Asset Photo App
-          </Text>
+        <View style={styles.container}>
+          <View style={styles.panel}>
+            <Text style={styles.title}>Asset Tool</Text>
 
-          <Button
-            title="Open Camera"
-            onPress={() => {
-              setIsCameraOpen(true);
-              setMode("scan");
-            }}
-          />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                setIsCameraOpen(true);
+                setMode("scan");
+              }}
+            >
+              <Text style={styles.buttonText}>Open Camera</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>History</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Exit</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : mode === "scan" ? (
         // 🔍 SCAN MODE
@@ -184,17 +195,70 @@ export default function App() {
 
 // 🎨 Styles (HARUS di luar component)
 const styles = StyleSheet.create({
+  // 🪟 background jadul
+  container: {
+    flex: 1,
+    backgroundColor: "#C0C0C0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // 🧱 panel box
+  panel: {
+    backgroundColor: "#C0C0C0",
+    padding: 20,
+    borderWidth: 2,
+    borderColor: "#808080",
+    width: 250,
+  },
+
+  // 🧊 title
+  title: {
+    fontFamily: "monospace",
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+
+  // 🔘 button jadul
+  button: {
+    backgroundColor: "#C0C0C0",
+    paddingVertical: 10,
+    marginBottom: 10,
+    alignItems: "center",
+
+    // efek 3D klasik
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#FFFFFF",
+    borderLeftColor: "#FFFFFF",
+    borderRightColor: "#000000",
+    borderBottomColor: "#000000",
+  },
+
+  buttonText: {
+    fontSize: 14,
+    color: "black",
+  },
+
   text: {
+    fontFamily: "monospace",
     color: "white",
     textAlign: "center",
     marginTop: 50,
     fontSize: 18,
   },
+
   cameraContainer: {
     flex: 1,
     justifyContent: "flex-end",
     marginBottom: 50,
   },
+
   overlay: {
     position: "absolute",
     bottom: 50,
