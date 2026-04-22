@@ -136,56 +136,91 @@ export default function App() {
         </View>
       ) : mode === "scan" ? (
         // 🔍 SCAN MODE
-        <View style={{ flex: 1 }}>
-          <CameraView
-            style={{ flex: 1 }}
-            facing="back"
-            zoom={0.2}
-            onBarcodeScanned={
-              barcode ? undefined : handleBarCodeScanned
-            }
-          />
+        <View style={styles.cameraContainer}>
+          <View style={styles.cameraFrameOuter}>
+            <View style={styles.cameraFrameInner}>
+              <CameraView
+                style={styles.cameraPreview}
+                ref={cameraRef}
+                facing="back"
+                zoom={0.2}
+                onBarcodeScanned={
+                  barcode ? undefined : handleBarCodeScanned
+                }
+              />
+            </View>
+          </View>
 
           {/* Overlay */}
-          <View style={styles.overlay}>
-            <Text style={styles.text}>Scan Barcode</Text>
+          <View style={styles.cameraPanel}>
+            <Text style={styles.cameraText}>[ SCAN MODE ]</Text>
+            <Text style={styles.cameraText}>Ready to scan...</Text>
 
-            <Button
-              title="Back"
-              onPress={() => {
-                setIsCameraOpen(false);
-                setBarcode(null);
-              }}
-            />
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={styles.retroButton}
+                onPress={() => {
+                  setIsCameraOpen(false);
+                  setBarcode(null);
+                }}
+              >
+                <Text style={styles.retroButtonText}>BACK</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       ) : (
         // 📸 CAMERA MODE
-        <View style={{ flex: 1 }}>
-          <CameraView
-            style={{ flex: 1 }}
-            ref={cameraRef}
-            facing="back"
-            zoom={0.2}
-          />
+        <View style={styles.cameraContainer}>
+          <View style={styles.cameraFrameOuter}>
+            <View style={styles.cameraFrameInner}>
+              <CameraView
+                style={styles.cameraPreview}
+                ref={cameraRef}
+                facing="back"
+                zoom={0.2}
+              />
+            </View>
+          </View>
 
           {/* Overlay */}
-          <View style={styles.overlay}>
-            <Text style={styles.text}>Barcode: {barcode}</Text>
-            <Text style={styles.text}>Foto ke: {photoCount}</Text>
+          <View style={styles.cameraPanel}>
+            <Text style={styles.cameraText}>[ CAMERA MODE ]</Text>
+            <Text style={styles.cameraText}>
+              BARCODE: {barcode}
+            </Text>
+            <Text style={styles.cameraText}>
+              FOTO: {photoCount}
+            </Text>
 
-            <Button title="Ambil Foto" onPress={takePicture} />
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={styles.retroButton}
+                onPress={takePicture}
+              >
+                <Text style={styles.retroButtonText}>CAPTURE</Text>
+              </TouchableOpacity>
 
-            <Button title="Selesai" onPress={handleFinish} />
+              <TouchableOpacity
+                style={styles.retroButton}
+                onPress={handleFinish}
+              >
+                <Text style={styles.retroButtonText}>DONE</Text>
+              </TouchableOpacity>
+            </View>
 
-            <Button
-              title="Back"
-              onPress={() => {
-                setIsCameraOpen(false);
-                setBarcode(null);
-                setPhotoCount(1);
-              }}
-            />
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={styles.retroButton}
+                onPress={() => {
+                  setIsCameraOpen(false);
+                  setBarcode(null);
+                  setPhotoCount(1);
+                }}
+              >
+                <Text style={styles.retroButtonText}>EXIT</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}
@@ -253,17 +288,120 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 
-  cameraContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    marginBottom: 50,
-  },
-
   overlay: {
     position: "absolute",
     bottom: 50,
     left: 0,
     right: 0,
     alignItems: "center",
+  },
+
+  cameraText: {
+    fontSize: 12,
+    marginBottom: 5,
+    fontFamily: "monospace",
+  },
+
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5,
+  },
+
+  retroButton: {
+    flex: 1,
+    marginHorizontal: 3,
+    paddingVertical: 8,
+    alignItems: "center",
+    backgroundColor: "#C0C0C0",
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#FFFFFF",
+    borderLeftColor: "#FFFFFF",
+    borderRightColor: "#000000",
+    borderBottomColor: "#000000",
+  },
+
+  retroButtonText: {
+    fontSize: 12,
+    fontFamily: "monospace",
+  },
+
+  cameraContainer: {
+    flex: 1,
+    backgroundColor: "#C0C0C0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // 🪟 FRAME LUAR (gelap)
+  cameraFrameOuter: {
+    padding: 4,
+    backgroundColor: "#808080",
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#000",
+    borderLeftColor: "#000",
+    borderRightColor: "#FFF",
+    borderBottomColor: "#FFF",
+  },
+
+  // 🪟 FRAME DALAM (terang)
+  cameraFrameInner: {
+    padding: 4,
+    backgroundColor: "#C0C0C0",
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#FFF",
+    borderLeftColor: "#FFF",
+    borderRightColor: "#000",
+    borderBottomColor: "#000",
+  },
+
+  // 📷 kotak camera (TIDAK FULLSCREEN)
+  cameraPreview: {
+    width: 330,
+    height: 450,
+    backgroundColor: "black",
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#000",
+    borderLeftColor: "#000",
+    borderRightColor: "#FFF",
+    borderBottomColor: "#FFF",
+  },
+
+  // 📦 panel bawah
+  cameraPanel: {
+    marginTop: 15,
+    width: 280,
+    backgroundColor: "#C0C0C0",
+    padding: 10,
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#FFF",
+    borderLeftColor: "#FFF",
+    borderRightColor: "#000",
+    borderBottomColor: "#000",
   },
 });
