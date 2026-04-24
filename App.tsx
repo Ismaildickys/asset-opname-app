@@ -11,9 +11,15 @@ export default function App() {
   const [photoCount, setPhotoCount] = useState(1);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-
   const BASE_DIR = FileSystem.documentDirectory + "Aset/";
   const cameraRef = useRef<any>(null);
+  const [dialog, setDialog] = useState<{
+    visible: boolean;
+    message: string;
+  }>({
+    visible: false,
+    message: "",
+  });
 
   useEffect(() => {
     requestPermission();
@@ -41,13 +47,13 @@ export default function App() {
   const sanitizeFileName = (input: string) => {
     return input
       .replace(/[^a-zA-Z0-9]/g, "_")
-      .substring(0, 100);
+      .substring(0, 50);
   };
 
   const extractName = (input: string) => {
     try {
       const parts = input.split("/");
-      return parts[parts.length - 1] || input;
+      return parts[parts.length] || input;
     } catch {
       return input;
     }
@@ -85,10 +91,16 @@ export default function App() {
 
       setPhotoCount((prev) => prev + 1);
 
-      alert(`Tersimpan di folder: ${barcode}`);
+      setDialog({
+        visible: true,
+        message: `Tersimpan di folder: ${barcode}`,
+      });
     } catch (error) {
       console.error("ERROR:", error);
-      alert("Gagal menyimpan foto");
+      setDialog({
+        visible: true,
+        message: "Gagal menyimpan foto",
+      });
     }
   };
 
@@ -221,6 +233,28 @@ export default function App() {
                 <Text style={styles.retroButtonText}>EXIT</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      )}
+      {dialog.visible && (
+        <View style={styles.dialogOverlay}>
+          <View style={styles.dialogBox}>
+            <Text style={styles.dialogTitle}>
+              SYSTEM MESSAGE
+            </Text>
+
+            <Text style={styles.dialogText}>
+              {dialog.message}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.dialogButton}
+              onPress={() =>
+                setDialog({ visible: false, message: "" })
+              }
+            >
+              <Text style={styles.dialogButtonText}>OK</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -403,5 +437,64 @@ const styles = StyleSheet.create({
     borderLeftColor: "#FFF",
     borderRightColor: "#000",
     borderBottomColor: "#000",
+  },
+
+  dialogOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  dialogBox: {
+    width: 260,
+    backgroundColor: "#C0C0C0",
+    padding: 10,
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#FFF",
+    borderLeftColor: "#FFF",
+    borderRightColor: "#000",
+    borderBottomColor: "#000",
+  },
+
+  dialogTitle: {
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontFamily: "monospace",
+  },
+
+  dialogText: {
+    marginBottom: 15,
+    fontFamily: "monospace",
+  },
+
+  dialogButton: {
+    alignSelf: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    backgroundColor: "#C0C0C0",
+
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+
+    borderTopColor: "#FFF",
+    borderLeftColor: "#FFF",
+    borderRightColor: "#000",
+    borderBottomColor: "#000",
+  },
+
+  dialogButtonText: {
+    fontFamily: "monospace",
   },
 });
